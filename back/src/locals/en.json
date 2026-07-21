@@ -1,0 +1,107 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "imageFallback": "https://picsum.photos/300/420?random=1",
+    "noData": "No data available"
+  },
+  "home": {
+    "loadingText": "Loading latest chapters...",
+    "title": "Latest Chapters",
+    "chapterPrefix": "Chapter",
+    "noCover": "Nothing to display"
+  },
+  "search": {
+    "placeholder": "Search manga...",
+    "search": "Search",
+    "results": "{{count}} results found for \"{{query}}\"",
+    "noResults": "No results found for \"{{query}}\"",
+    "latestUpdates": "Latest Updates"
+  },
+  "mangaDetails": {
+    "loading": "Loading manga...",
+    "error": "Unable to load manga",
+    "title": "Manga Details",
+    "chaptersSection": "Chapters",
+    "chapterPrefix": "Chapter",
+    "author": "Author:",
+    "artist": "Artist:",
+    "status": "Status:"
+  },
+  "chapter": {
+    "loading": "Loading pages",
+    "error": "Unable to load the page",
+    "pageAlt": "Page {{number}}"
+  },
+  "auth": {
+    "register": {
+      "title": "Register",
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "registerButton": "Register",
+      "alreadyLoggedIn": "You are already logged in as {{username}}",
+      "goToHomepage": "Go to homepage",
+      "validation": {
+        "usernameRequired": "Username is required",
+        "emailInvalid": "Invalid email",
+        "passwordMin": "Password must be at least 8 characters",
+        "passwordsNotMatch": "Passwords do not match"
+      }
+    },
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "password": "Password",
+      "loginButton": "Login",
+      "loggingIn": "Logging in...",
+      "alreadyLoggedIn": "You are already logged in as {{username}}",
+      "logout": "Logout",
+      "goToHomepage": "Go to homepage",
+      "noAccount":"No account",
+      "register":"Create your account",
+      "validation": {
+        "emailInvalid": "Invalid email",
+        "passwordRequired": "Password is required"
+      },
+      "errors": {
+        "network": "Unable to reach the server.",
+        "generic": "Error during login"
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "sidebar": {
+      "viewAll": "View all",
+      "language": "Language",
+      "reading": "Reading",
+      "contentFilters": "Content Filters",
+      "account": "Account"
+    },
+    "interfaceLanguage": {
+      "title": "Interface Language",
+      "description": "Choose the language used for the interface."
+    },
+    "chapterLanguage": {
+      "title": "Chapter Language",
+      "description": "The default language the filter for chapter list is set to. Changing the filter in chapter list will not modify this value."
+    },
+    "contentFilter": {
+      "title": "Content Filter",
+      "description": "Choose what type of content appears.",
+      "safe": "Safe",
+      "suggestive": "Suggestive",
+      "nsfw": "NSFW",
+      "mature": "Mature"
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "description": "Manage your account actions.",
+      "deleteAccount": "Delete account",
+      "logout": "Logout"
+    }
+  }
+  
+}

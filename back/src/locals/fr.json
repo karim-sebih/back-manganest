@@ -1,0 +1,106 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "imageFallback": "https://picsum.photos/300/420?random=1",
+    "noData": "Aucune donnée disponible"
+  },
+  "home": {
+    "loadingText": "Chargement des derniers chapitres...",
+    "title": "Derniers Chapitres",
+    "chapterPrefix": "Chapitre",
+    "noCover": "Rien à afficher"
+  },
+  "search": {
+    "placeholder": "Rechercher un manga...",
+    "search": "Rechercher",
+    "results": "{{count}} résultats trouvés pour \"{{query}}\"",
+    "noResults": "Aucun résultat trouvé pour \"{{query}}\"",
+    "latestUpdates": "Dernières mises à jour"
+  },
+  "mangaDetails": {
+    "loading": "Chargement du manga...",
+    "error": "Impossible de charger le manga",
+    "title": "Détails du manga",
+    "chaptersSection": "Chapitres",
+    "chapterPrefix": "Chapitre",
+    "author": "Auteur :",
+    "artist": "Artiste :",
+    "status": "Statut :"
+  },
+  "chapter": {
+    "loading": "Chargement des pages",
+    "error": "Impossible de charger la page",
+    "pageAlt": "Page {{number}}"
+  },
+  "auth": {
+    "register": {
+      "title": "Inscription",
+      "username": "Nom d'utilisateur",
+      "email": "Email",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "registerButton": "S'inscrire",
+      "alreadyLoggedIn": "Vous êtes déjà connecté en tant que {{username}}",
+      "goToHomepage": "Aller à l'accueil",
+      "validation": {
+        "usernameRequired": "Le nom d'utilisateur est requis",
+        "emailInvalid": "Email invalide",
+        "passwordMin": "Le mot de passe doit contenir au moins 8 caractères",
+        "passwordsNotMatch": "Les mots de passe ne correspondent pas"
+      }
+    },
+    "login": {
+      "title": "Connexion",
+      "email": "Email",
+      "password": "Mot de passe",
+      "loginButton": "Se connecter",
+      "loggingIn": "Connexion en cours...",
+      "alreadyLoggedIn": "Vous êtes déjà connecté en tant que {{username}}",
+      "logout": "Se déconnecter",
+      "goToHomepage": "Aller à l'accueil",
+      "noAccount":"Pas de compte ? ",
+      "register":"Inscrivez-vous",
+      "validation": {
+        "emailInvalid": "Email invalide",
+        "passwordRequired": "Mot de passe requis"
+      },
+      "errors": {
+        "network": "Impossible de contacter le serveur.",
+        "generic": "Erreur lors de la connexion"
+      }
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "sidebar": {
+      "viewAll": "Tout voir",
+      "language": "Langue",
+      "reading": "Lecture",
+      "contentFilters": "Filtres de contenu",
+      "account": "Compte"
+    },
+    "interfaceLanguage": {
+      "title": "Langue de l'interface",
+      "description": "Choisissez la langue utilisée pour l'interface."
+    },
+    "chapterLanguage": {
+      "title": "Langue des chapitres",
+      "description": "La langue par défaut du filtre pour la liste des chapitres. Changer le filtre dans la liste des chapitres ne modifiera pas cette valeur."
+    },
+    "contentFilter": {
+      "title": "Filtre de contenu",
+      "description": "Choisissez quel type de contenu apparaît.",
+      "safe": "Safe",
+      "suggestive": "Suggestif",
+      "nsfw": "NSFW",
+      "mature": "Mature"
+    },
+    "dangerZone": {
+      "title": "Zone de danger",
+      "description": "Gérez les actions de votre compte.",
+      "deleteAccount": "Supprimer le compte",
+      "logout": "Se déconnecter"
+    }
+  }
+}
