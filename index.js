@@ -4,6 +4,8 @@ import cors from "cors";
 import router from "./src/routes/index.js";
 import dotenv from "dotenv";
 import { setupassociations } from "./src/models/associations.js";
+import sequelize from "./src/db/connection.js";
+
 
 dotenv.config(); // Charger les variables d'environnement depuis le fichier .env
 
@@ -44,6 +46,10 @@ const PORT = process.env.PORT || 3000; // Définir le port du serveur
 app.use("/", router);
 
 // Démarrer le serveur
+sequelize.authenticate()
+  .then(() => console.log("✅ DB CONNECTED (Railway)"))
+  .catch((err) => console.error("❌ DB CONNECTION FAILED:", err.message))
+
 app.listen(PORT, () => {
   console.log("-----------------------------");
   console.log("--        OUVERT        --");
