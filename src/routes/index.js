@@ -14,7 +14,6 @@ import Chapterrouter from "./chapter.route.js";
 import Pagerouter from "./page.route.js"
 import AdminMangarouter from "../routes/AdminManga.route.js";
 import AdminUser from "../routes/AdminUser.route.js"
-import imageProxyRoutes from "./imageProxy.routes.js";
 
 
 const router = express.Router();
@@ -36,6 +35,5 @@ router.use("/chapitre", Chapterrouter);
 router.use("/pages", Pagerouter);
 router.use("/adminmanga", AdminMangarouter);
 router.use("/adminuser", AdminUser)
-router.use("/image-proxy", imageProxyRoutes);
 
 export default router;
