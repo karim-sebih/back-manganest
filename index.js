@@ -2,68 +2,67 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import router from "./src/routes/index.js";
+import dotenv from "dotenv";
 import { setupassociations } from "./src/models/associations.js";
 import sequelize from "./src/db/connection.js";
 
+
+dotenv.config(); // Charger les variables d'environnement depuis le fichier .env
+
+// Setup model associations
 setupassociations();
 
-const app = express();
+const app = express(); // Créer une application Express
 
-/**
- * CORS
- * - autorise uniquement les origins présentes dans CORS_ORIGINS
- * - répond correctement aux OPTIONS (preflight)
- */
-app.use((req, res, next) => {
-  const corsOrigins = process.env.CORS_ORIGINS?.split(",").map(s => s.trim()) || [];
-  const origin = req.headers.origin;
 
-  if (origin && corsOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-    res.header("Vary", "Origin");
-  }
 
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  res.header("Access-Control-Expose-Headers", "Content-Length");
 
-  if (req.method === "OPTIONS") return res.sendStatus(204);
-  next();
-});
+const corsOrigins = process.env.CORS_ORIGINS?.split(",").map(s => s.trim()) || [];
 
-// (optionnel) ajoute cors pour sécuriser la config, mais le middleware ci-dessus gère déjà le preflight
 app.use(cors({
-  origin: (origin, cb) => {
-    const corsOrigins = process.env.CORS_ORIGINS?.split(",").map(s => s.trim()) || [];
-    if (!origin) return cb(null, true);
-    return corsOrigins.includes(origin) ? cb(null, true) : cb(new Error("Not allowed by CORS"));
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      "https://front-manganest-5lai-awmk43956-karim-sebihs-projects.vercel.app/",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ];
+
+    // important: si origin est undefined (parfois lors de certains appels), on autorise
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
   },
-  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 }));
 
-// Parsing JSON → avant les routes
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// 3. Parsing JSON → ABSOLUMENT AVANT LES ROUTES
+app.use(express.json());          // ← pour req.body JSON
+app.use(express.urlencoded({ extended: true }));  // ← si tu utilises forms aussi
 
-// Static files
-app.use("/uploads", express.static("uploads"));
+// 4. Static files
+app.use('/uploads', express.static('uploads'));
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Définir le port du serveur
 
-// Routes
+
+// 5. Tes routes
 app.use("/", router);
 
-// Start server
+// Démarrer le serveur
 sequelize.authenticate()
-  .then(() => console.log("✅ DB CONNECTED"))
-  .catch((err) => console.error("❌ DB CONNECTION FAILED:", err.message));
+  .then(() => console.log("✅ DB CONNECTED (Railway)"))
+  .catch((err) => console.error("❌ DB CONNECTION FAILED:", err.message))
 
 app.listen(PORT, () => {
   console.log("-----------------------------");
   console.log("--        OUVERT        --");
   console.log("-----------------------------");
+
   console.log(`Le serveur est lancé sur http://localhost:${PORT}`);
 });
