@@ -175,10 +175,11 @@ const mangadexService = {
             "order[latestUploadedChapter]": "desc",
         });
 
-        contentFilters.forEach(f => params.append("contentRating[]", f));
-        includedTags.forEach(t => params.append("includedTags[]", t));
-        excludedTags.forEach(t => params.append("excludedTags[]", t));
+        contentFilters.forEach((f) => params.append("contentRating[]", f));
+        includedTags.forEach((t) => params.append("includedTags[]", t));
+        excludedTags.forEach((t) => params.append("excludedTags[]", t));
 
+        // IMPORTANT : on demande cover_art pour avoir des covers dans "mangas"
         params.append("includes[]", "cover_art");
         params.append("availableTranslatedLanguage[]", "fr");
         params.append("availableTranslatedLanguage[]", "en");
@@ -189,8 +190,7 @@ const mangadexService = {
         const mangas = (await mangaRes.json()).data || [];
         if (!mangas.length) return [];
 
-        const mangaMap = new Map(mangas.map(m => [m.id, m]));
-
+        const mangaMap = new Map(mangas.map((m) => [m.id, m]));
 
         const results = await Promise.all(
             mangas.map(async (m) => {
@@ -208,45 +208,59 @@ const mangadexService = {
 
         let chapters = results.flat();
 
-        //  tri
         chapters.sort(
-            (a, b) =>
-                new Date(b.attributes.readableAt) - new Date(a.attributes.readableAt)
+            (a, b) => new Date(b.attributes.readableAt) - new Date(a.attributes.readableAt)
         );
 
-        //  unique manga
         const seen = new Set();
-        chapters = chapters.filter(ch => {
-            const id = ch.relationships.find(r => r.type === "manga")?.id;
-            if (!id || seen.has(id)) return false;
-            seen.add(id);
+        chapters = chapters.filter((ch) => {
+            const mangaId = ch.relationships.find((r) => r.type === "manga")?.id;
+            if (!mangaId || seen.has(mangaId)) return false;
+            seen.add(mangaId);
             return true;
         });
 
-        //  limite
         chapters = chapters.slice(0, limit);
 
-        //  format final
-        return chapters.map(ch => {
-            const mangaId = ch.relationships.find(r => r.type === "manga")?.id;
-            const manga = mangaMap.get(mangaId);
+        const buildCover = (manga, mangaId) => {
+            const coverRel = manga?.relationships?.find((r) => r.type === "cover_art");
+            const fileName = coverRel?.attributes?.fileName;
+            if (!fileName) return null;
+            return `https://uploads.mangadex.org/covers/${mangaId}/${fileName}`;
+        };
 
-            const coverRel = manga?.relationships?.find(r => r.type === "cover_art");
+        // ✅ Promise.all pour que ce soit fiable en async
+        return Promise.all(
+            chapters.map(async (ch) => {
+                const mangaId = ch.relationships.find((r) => r.type === "manga")?.id;
+                const mangaFromMap = mangaMap.get(mangaId);
 
-            return {
-                id: mangaId,
-                chapterId: ch.id,
-                mangaTitle: manga?.attributes?.title
-                    ? Object.values(manga.attributes.title)[0]
-                    : "Titre inconnu",
-                lastChapter: ch.attributes.chapter || "??",
-                publishAt: ch.attributes.readableAt,
-                cover: coverRel?.attributes?.fileName
-                    ? `https://uploads.mangadex.org/covers/${mangaId}/${coverRel.attributes.fileName}`
-                    : null,
-            };
-        });
-    },
+                // cover d’abord via map
+                let cover = mangaFromMap ? buildCover(mangaFromMap, mangaId) : null;
+
+                // fallback : si cover null, fetch complet
+                if (!cover) {
+                    try {
+                        const fullManga = await mangadexService.getMangaById(mangaId);
+                        cover = buildCover(fullManga, mangaId);
+                    } catch {
+                        cover = null;
+                    }
+                }
+
+                return {
+                    id: mangaId,
+                    chapterId: ch.id,
+                    mangaTitle: mangaFromMap?.attributes?.title
+                        ? Object.values(mangaFromMap.attributes.title)[0]
+                        : "Titre inconnu",
+                    lastChapter: ch.attributes.chapter || "??",
+                    publishAt: ch.attributes.readableAt,
+                    cover,
+                };
+            })
+        );
+    }
 
 
 
