@@ -20,27 +20,17 @@ const app = express(); // Créer une application Express
 const corsOrigins = process.env.CORS_ORIGINS?.split(",").map(s => s.trim()) || [];
 
 app.use(cors({
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      "https://front-manganest-5lai-l1r8rrzq9-karim-sebihs-projects.vercel.app",
-      "http://localhost:5173",
-      "http://localhost:3000",
-    ];
+  origin: (origin, cb) => {
+    const corsOrigins = process.env.CORS_ORIGINS?.split(",").map(s => s.trim()) || [];
+    if (!origin) return cb(null, true);
 
-    // important: si origin est undefined (parfois lors de certains appels), on autorise
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-
-    return callback(new Error("Not allowed by CORS"));
+    return corsOrigins.includes(origin) ? cb(null, true) : cb(new Error("Not allowed by CORS"));
   },
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
+  exposedHeaders: ["Content-Length"],
 }));
-
 // 3. Parsing JSON → ABSOLUMENT AVANT LES ROUTES
 app.use(express.json());          // ← pour req.body JSON
 app.use(express.urlencoded({ extended: true }));  // ← si tu utilises forms aussi
