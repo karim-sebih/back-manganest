@@ -1,27 +1,24 @@
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const BASE_URL = "https://api.mangadex.org";
 
 const mangadexService = {
-    searchManga: async (
-        title = "",
-        limit = 150,
-        offset = 0,
-        includedTags = [],
-        excludedTags = []
-    ) => {
+
+    // Recherche manga
+    searchManga: async (title = "", limit = 150, offset = 0, includedTags = [], excludedTags = []) => {
         try {
             const params = new URLSearchParams();
-            params.append("title", title);
+            params.append("title", title); // Supprimez encodeURIComponent ici
             params.append("limit", limit);
             params.append("offset", offset);
             params.append("includes[]", "cover_art");
             params.append("availableTranslatedLanguage[]", "fr");
             params.append("availableTranslatedLanguage[]", "en");
 
-            includedTags.forEach((tag) => params.append("includedTags[]", tag));
-            excludedTags.forEach((tag) => params.append("excludedTags[]", tag));
+            includedTags.forEach(tag => params.append("includedTags[]", tag));
+            excludedTags.forEach(tag => params.append("excludedTags[]", tag));
 
             const res = await fetch(`${BASE_URL}/manga?${params}`);
             const data = await res.json();
@@ -31,28 +28,35 @@ const mangadexService = {
             throw error;
         }
     },
-
+    // Un Manga par ID
     getMangaById: async (id) => {
         try {
+
             const res = await fetch(
                 `${BASE_URL}/manga/${id}?includes[]=author&includes[]=artist&includes[]=cover_art`
             );
+
             const data = await res.json();
+
             return data.data;
+
         } catch (error) {
             console.error("getMangaById Error:", error.message);
             throw error;
         }
     },
 
+    // plusieurs mangas par ID
     getMangasByIds: async (ids) => {
         try {
             const params = new URLSearchParams();
-            ids.forEach((id) => params.append("ids[]", id));
+
+            ids.forEach(id => params.append("ids[]", id));
             params.append("includes[]", "cover_art");
 
             const res = await fetch(`${BASE_URL}/manga?${params}`);
             const data = await res.json();
+
             return data.data || [];
         } catch (error) {
             console.error("getMangasByIds Error:", error.message);
@@ -60,10 +64,19 @@ const mangadexService = {
         }
     },
 
-    getMangaChapters: async (id, languages = ["fr"]) => {
+    /* Récupérer les chapitres d’un manga (sois en eng sois en fr pour l'instant*/
+    getMangaChapters: async (
+        id,
+        languages = ["fr"]
+    ) => {
+
         try {
+
             const languageQuery = languages
-                .map((lang) => `translatedLanguage[]=${lang}`)
+                .map(
+                    (lang) =>
+                        `translatedLanguage[]=${lang}`
+                )
                 .join("&");
 
             const res = await fetch(
@@ -71,24 +84,43 @@ const mangadexService = {
             );
 
             const data = await res.json();
+
             return data.data;
+
         } catch (error) {
-            console.error("getMangaChapters Error:", error.message);
+
+            console.error(
+                "getMangaChapters Error:",
+                error.message
+            );
+
             throw error;
         }
     },
 
     getChapterPages: async (id) => {
         try {
-            const res = await fetch(`${BASE_URL}/at-home/server/${id}`);
+
+            const res = await fetch(
+                `${BASE_URL}/at-home/server/${id}`
+            );
+
             const data = await res.json();
+
             return data;
+
         } catch (error) {
-            console.error("getChapterPages Error:", error.message);
+
+            console.error(
+                "getChapterPages Error:",
+                error.message
+            );
+
             throw error;
         }
     },
 
+    // Tous les mangas récents
     getAllManga: async (
         limit = 20,
         offset = 0,
@@ -103,9 +135,9 @@ const mangadexService = {
                 "order[latestUploadedChapter]": "desc",
             });
 
-            contentFilters.forEach((f) => params.append("contentRating[]", f));
-            includedTags.forEach((t) => params.append("includedTags[]", t));
-            excludedTags.forEach((t) => params.append("excludedTags[]", t));
+            contentFilters.forEach(f => params.append("contentRating[]", f));
+            includedTags.forEach(t => params.append("includedTags[]", t));
+            excludedTags.forEach(t => params.append("excludedTags[]", t));
 
             params.append("includes[]", "cover_art");
             params.append("availableTranslatedLanguage[]", "fr");
@@ -117,12 +149,15 @@ const mangadexService = {
 
             const data = await res.json();
             return data.data || [];
+
         } catch (error) {
             console.error("getAllManga:", error);
             throw error;
         }
     },
 
+
+    // Derniers chapitres
     getLatestChapters: async (
         limit = 12,
         offset = 0,
@@ -140,9 +175,9 @@ const mangadexService = {
             "order[latestUploadedChapter]": "desc",
         });
 
-        contentFilters.forEach((f) => params.append("contentRating[]", f));
-        includedTags.forEach((t) => params.append("includedTags[]", t));
-        excludedTags.forEach((t) => params.append("excludedTags[]", t));
+        contentFilters.forEach(f => params.append("contentRating[]", f));
+        includedTags.forEach(t => params.append("includedTags[]", t));
+        excludedTags.forEach(t => params.append("excludedTags[]", t));
 
         params.append("includes[]", "cover_art");
         params.append("availableTranslatedLanguage[]", "fr");
@@ -154,7 +189,8 @@ const mangadexService = {
         const mangas = (await mangaRes.json()).data || [];
         if (!mangas.length) return [];
 
-        const mangaMap = new Map(mangas.map((m) => [m.id, m]));
+        const mangaMap = new Map(mangas.map(m => [m.id, m]));
+
 
         const results = await Promise.all(
             mangas.map(async (m) => {
@@ -172,71 +208,49 @@ const mangadexService = {
 
         let chapters = results.flat();
 
-        // Tri par readableAt
+        //  tri
         chapters.sort(
             (a, b) =>
                 new Date(b.attributes.readableAt) - new Date(a.attributes.readableAt)
         );
 
-        // Unique manga (1 chapitre par manga)
+        //  unique manga
         const seen = new Set();
-        chapters = chapters.filter((ch) => {
-            const mangaId = ch?.relationships?.find((r) => r.type === "manga")?.id;
-            if (!mangaId || seen.has(mangaId)) return false;
-            seen.add(mangaId);
+        chapters = chapters.filter(ch => {
+            const id = ch.relationships.find(r => r.type === "manga")?.id;
+            if (!id || seen.has(id)) return false;
+            seen.add(id);
             return true;
         });
 
+        //  limite
         chapters = chapters.slice(0, limit);
 
-        const buildCoverFromManga = (manga, mangaId) => {
-            const coverRel = manga?.relationships?.find((r) => r.type === "cover_art");
-            const fileName = coverRel?.attributes?.fileName;
-            return fileName ? `https://uploads.mangadex.org/covers/${mangaId}/${fileName}` : null;
-        };
+        //  format final
+        return chapters.map(ch => {
+            const mangaId = ch.relationships.find(r => r.type === "manga")?.id;
+            const manga = mangaMap.get(mangaId);
 
-        // IMPORTANT: Promise.all sinon tu renvoies des Promises au front
-        return Promise.all(
-            chapters.map(async (ch) => {
-                const mangaId = ch?.relationships?.find((r) => r.type === "manga")?.id;
+            const coverRel = manga?.relationships?.find(r => r.type === "cover_art");
 
-                if (!mangaId) {
-                    return {
-                        id: null,
-                        chapterId: ch.id,
-                        mangaTitle: "Titre inconnu",
-                        lastChapter: ch.attributes?.chapter || "??",
-                        publishAt: ch.attributes?.readableAt || null,
-                        cover: null,
-                    };
-                }
-
-                const manga = mangaMap.get(mangaId);
-                let cover = buildCoverFromManga(manga, mangaId);
-
-                // fallback si cover null
-                if (!cover) {
-                    try {
-                        const fullManga = await mangadexService.getMangaById(mangaId);
-                        cover = buildCoverFromManga(fullManga, mangaId);
-                    } catch {
-                        cover = null;
-                    }
-                }
-
-                return {
-                    id: mangaId,
-                    chapterId: ch.id,
-                    mangaTitle: manga?.attributes?.title
-                        ? Object.values(manga.attributes.title)[0]
-                        : "Titre inconnu",
-                    lastChapter: ch.attributes?.chapter || "??",
-                    publishAt: ch.attributes?.readableAt || null,
-                    cover,
-                };
-            })
-        );
+            return {
+                id: mangaId,
+                chapterId: ch.id,
+                mangaTitle: manga?.attributes?.title
+                    ? Object.values(manga.attributes.title)[0]
+                    : "Titre inconnu",
+                lastChapter: ch.attributes.chapter || "??",
+                publishAt: ch.attributes.readableAt,
+                cover: coverRel?.attributes?.fileName
+                    ? `https://uploads.mangadex.org/covers/${mangaId}/${coverRel.attributes.fileName}`
+                    : null,
+            };
+        });
     },
+
+
+
+
 };
 
 export default mangadexService;
