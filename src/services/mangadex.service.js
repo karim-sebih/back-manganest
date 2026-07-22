@@ -232,6 +232,20 @@ const mangadexService = {
             const manga = mangaMap.get(mangaId);
 
             const coverRel = manga?.relationships?.find(r => r.type === "cover_art");
+            let cover = coverRel?.attributes?.fileName
+                ? `https://uploads.mangadex.org/covers/${mangaId}/${coverRel.attributes.fileName}`
+                : null;
+
+            // fallback si cover null
+            if (!cover) {
+                try {
+                    const [fullManga] = await mangadexService.getMangaById(mangaId);
+                    const fullCoverRel = fullManga?.relationships?.find(r => r.type === "cover_art");
+                    cover = fullCoverRel?.attributes?.fileName
+                        ? `https://uploads.mangadex.org/covers/${mangaId}/${fullCoverRel.attributes.fileName}`
+                        : null;
+                } catch { }
+            }
 
             return {
                 id: mangaId,
