@@ -226,7 +226,9 @@ const mangadexService = {
             const coverRel = manga?.relationships?.find((r) => r.type === "cover_art");
             const fileName = coverRel?.attributes?.fileName;
             if (!fileName) return null;
-            return `https://uploads.mangadex.org/covers/${mangaId}/${fileName}`;
+            return `/api/image?url=${encodeURIComponent(
+                `https://uploads.mangadex.org/covers/${mangaId}/${fileName}`
+            )}`;
         };
 
         // ✅ Promise.all pour que ce soit fiable en async
