@@ -245,7 +245,7 @@ const mangadexService = {
                         ? `https://uploads.mangadex.org/covers/${mangaId}/${fullCoverRel.attributes.fileName}`
                         : null;
                 } catch { }
-            }
+            };
 
             return {
                 id: mangaId,
